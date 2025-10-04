@@ -7,6 +7,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.camera.core.CameraSelector
+import androidx.camera.core.ImageAnalysis
 import androidx.camera.core.Preview
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
@@ -16,6 +17,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
+import java.util.concurrent.Executors
 
 // MainActivity: 앱 실행 시 가장 먼저 실행되는 Activity (Jetpack Compose 기반)
 class MainActivity : ComponentActivity() {
@@ -55,6 +57,14 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun CameraPreviewScreen() {
+
+    val imageAnalyzer = ImageAnalysis.Builder()
+        .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
+        .build()
+        .also {
+            // it.setAnalyzer(Executors.newSingleThreadExecutor(), ReceiptsAnalyzer())
+        }
+
     // AndroidView: 기존 Android View(PreviewView)를 Compose 환경에서 사용하도록 감싸는 래퍼
     AndroidView(
         modifier = Modifier.fillMaxSize(),
@@ -84,7 +94,10 @@ fun CameraPreviewScreen() {
 
                     // 카메라를 Lifecycle에 바인딩 (Activity 생명주기와 동기화)
                     cameraProvider.bindToLifecycle(
-                        ctx as ComponentActivity, cameraSelector, preview
+                        ctx as ComponentActivity,
+                        cameraSelector,
+                        preview,
+                        imageAnalyzer
                     )
                 } catch (e: Exception) {
                     e.printStackTrace()
