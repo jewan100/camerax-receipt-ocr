@@ -49,6 +49,19 @@ dependencies {
     implementation(libs.androidx.compose.ui.graphics)
     implementation(libs.androidx.compose.ui.tooling.preview)
     implementation(libs.androidx.compose.material3)
+
+    // CameraX
+    implementation(libs.androidx.camerax.core)
+    implementation(libs.androidx.camerax.camera2)
+    implementation(libs.androidx.camerax.lifecycle)
+    implementation(libs.androidx.camerax.video)
+    implementation(libs.androidx.camerax.view)
+    implementation(libs.androidx.camerax.mlkit.vision)
+    implementation(libs.androidx.camerax.extensions)
+
+    // ML kit
+    implementation(libs.mlkit.text.recognition.korean)
+    
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
