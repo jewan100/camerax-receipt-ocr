@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
 import java.util.concurrent.Executors
@@ -58,11 +59,13 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun CameraPreviewScreen() {
 
+    val context = LocalContext.current
+
     val imageAnalyzer = ImageAnalysis.Builder()
         .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
         .build()
         .also {
-            // it.setAnalyzer(Executors.newSingleThreadExecutor(), ReceiptsAnalyzer())
+            it.setAnalyzer(Executors.newSingleThreadExecutor(), ReceiptAnalyzer(context))
         }
 
     // AndroidView: 기존 Android View(PreviewView)를 Compose 환경에서 사용하도록 감싸는 래퍼
