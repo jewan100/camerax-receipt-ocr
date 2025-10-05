@@ -11,6 +11,8 @@ composeBom = "2024.09.00"
 
 camerax = "1.5.0"
 mlkit-text-korean = "16.0.1"
+tensorflow-lite = "2.17.0"
+tensorflow-lite-support = "0.5.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -39,6 +41,10 @@ androidx-camerax-extensions = { group = "androidx.camera", name = "camera-extens
 
 # ML kit
 mlkit-text-recognition-korean = { group = "com.google.mlkit", name = "text-recognition-korean", version.ref = "mlkit-text-korean" }
+
+# TensorFlow Lite
+tensorflow-lite = { module = "org.tensorflow:tensorflow-lite", version.ref = "tensorflow-lite" }
+tensorflow-lite-support = { module = "org.tensorflow:tensorflow-lite-support", version.ref = "tensorflow-lite-support" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

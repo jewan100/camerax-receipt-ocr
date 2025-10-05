@@ -8,6 +8,10 @@ android {
     namespace = "com.jewan.myapp"
     compileSdk = 36
 
+    androidResources  {
+        noCompress += "tflite"
+    }
+
     defaultConfig {
         applicationId = "com.jewan.myapp"
         minSdk = 36
@@ -61,7 +65,11 @@ dependencies {
 
     // ML kit
     implementation(libs.mlkit.text.recognition.korean)
-    
+
+    // TensorFlow Lite
+    implementation(libs.tensorflow.lite)
+    implementation(libs.tensorflow.lite.support)
+
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
