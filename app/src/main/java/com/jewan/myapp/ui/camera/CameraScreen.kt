@@ -1,4 +1,4 @@
-package com.jewan.myapp
+package com.jewan.myapp.ui.camera
 
 import androidx.activity.ComponentActivity
 import androidx.camera.core.CameraSelector
@@ -20,9 +20,10 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
+import androidx.navigation.NavController
 
 @Composable
-fun CameraPreviewScreen() {
+fun CameraPreviewScreen(navController: NavController) {
 
     // 현재 컴포저블이 실행 중인 Context를 가져옴
     // → CameraProvider, PreviewView 생성 등에 필요
