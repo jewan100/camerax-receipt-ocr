@@ -2,6 +2,9 @@ package com.jewan.myapp.ui.camera
 
 import androidx.activity.ComponentActivity
 import androidx.camera.core.CameraSelector
+import androidx.camera.core.ImageCapture
+import androidx.camera.core.ImageCaptureException
+import androidx.camera.core.ImageProxy
 import androidx.camera.core.Preview
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
@@ -13,6 +16,7 @@ import androidx.compose.material.icons.filled.AddCircle
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -20,14 +24,41 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import com.jewan.myapp.viewmodel.ImageViewModel
 
 @Composable
-fun CameraPreviewScreen(navController: NavController) {
-
+fun CameraPreviewScreen(
+    navController: NavController,
+    viewModel: ImageViewModel
+) {
     // 현재 컴포저블이 실행 중인 Context를 가져옴
     // → CameraProvider, PreviewView 생성 등에 필요
     val context = LocalContext.current
+
+    /**
+     * ImageCapture UseCase 설정
+     * - 사진을 촬영하기 위한 CameraX UseCase
+     * - remember를 사용해 Recomposition 시에도 같은 인스턴스를 유지
+     */
+    val imageCapture = remember {
+        ImageCapture.Builder()
+            // [1] 캡처 모드: 지연 최소화 vs 고품질 중 선택
+            .setCaptureMode(ImageCapture.CAPTURE_MODE_MAXIMIZE_QUALITY) // OCR을 위해 고해상도
+            // [2] 타겟 해상도 (선택사항)
+            // .setTargetResolution(Size(1920, 1080))
+            // [3] 플래시 모드: AUTO / ON / OFF
+            // .setFlashMode(ImageCapture.FLASH_MODE_AUTO)
+            .build() // 최종 ImageCapture 객체 생성
+    }
+
+    /**
+     * Executor: 카메라 콜백(onCaptureSuccess 등)을 실행할 스레드를 지정
+     * - 여기서는 메인 스레드(UI 스레드)에서 실행하도록 설정
+     * - remember를 통해 Recomposition 시 동일 Executor 재사용
+     */
+    val cameraExecutor = remember { ContextCompat.getMainExecutor(context) }
 
     // Box 레이아웃: 카메라 프리뷰와 버튼을 겹쳐서 배치하기 위해 사용
     Box(
@@ -71,7 +102,8 @@ fun CameraPreviewScreen(navController: NavController) {
                         cameraProvider.bindToLifecycle(
                             ctx as ComponentActivity,
                             cameraSelector,
-                            preview
+                            preview,
+                            imageCapture
                         )
                     } catch (e: Exception) {
                         // 카메라 바인딩 중 에러 발생 시 로그 출력
@@ -92,7 +124,28 @@ fun CameraPreviewScreen(navController: NavController) {
                 .padding(bottom = 32.dp),      // 화면 하단과의 간격 설정
             containerColor = Color(0xFF3DDC84), // 안드로이드 공식 그린 색상 (#3DDC84)
             contentColor = Color.White,         // 아이콘 색상 (흰색)
-            onClick = { /*TODO: 촬영 버튼 클릭 시 실행될 로직*/ }
+            onClick = {
+                imageCapture.takePicture(
+                    ContextCompat.getMainExecutor(context),
+                    object : ImageCapture.OnImageCapturedCallback() {
+                        override fun onCaptureSuccess(image: ImageProxy) {
+                            val bitmap = image.toBitmap()
+                            viewModel.setBitmap(bitmap)
+                            image.close()
+
+                            // 카메라 완전히 종료
+                            val provider = ProcessCameraProvider.getInstance(context).get()
+                            provider.unbindAll()
+
+                            navController.navigate("preview")
+                        }
+
+                        override fun onError(exception: ImageCaptureException) {
+                            exception.printStackTrace()
+                        }
+                    }
+                )
+            }
         ) {
             // 플로팅 버튼 내부의 아이콘
             Icon(
