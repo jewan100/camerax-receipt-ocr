@@ -1,5 +1,6 @@
 package com.jewan.myapp.ui.draw
 
+import android.graphics.Bitmap
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -27,52 +28,56 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
+import androidx.compose.ui.graphics.asAndroidPath
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.dp
+import androidx.core.graphics.createBitmap
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.jewan.myapp.viewmodel.DrawViewModel
 
 @Composable
 fun DrawScreen() {
-    // ✏️ Path는 상태로 관리 (변경 시 Canvas 다시 그림)
-    var path by remember { mutableStateOf(Path()) }
+    val viewModel: DrawViewModel = viewModel()
 
-    // 🎯 인식 결과 텍스트
+    var path by remember { mutableStateOf(Path()) }
     var resultText by remember { mutableStateOf("결과 없음") }
+
+    // 🖼️ 사용자가 그린 내용을 Bitmap으로 저장
+    var latestBitmap by remember { mutableStateOf<Bitmap?>(null) }
 
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color(0xFFEEEEEE)), // 상위 배경은 밝게
+            .background(Color(0xFFEEEEEE)),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Top
     ) {
         Spacer(modifier = Modifier.height(32.dp))
 
-        // ✅ BoxWithConstraints: 실제 너비(maxWidth) 기반으로 정사각형 크기 결정
         BoxWithConstraints(
             modifier = Modifier.fillMaxWidth(),
             contentAlignment = Alignment.Center
         ) {
-            val canvasSize = maxWidth // ✅ 정사각형 한 변의 길이 (1:1 비율)
+            val canvasSize = maxWidth
 
             Box(
                 modifier = Modifier
                     .size(canvasSize)
-                    .background(Color.Black) // 검은색 = 실제 드로잉 가능 영역
-                    .border(2.dp, Color.DarkGray), // 시각적 확인용 테두리
+                    .background(Color.Black)
+                    .border(2.dp, Color.DarkGray),
                 contentAlignment = Alignment.Center
             ) {
                 Canvas(
                     modifier = Modifier
                         .fillMaxSize()
-                        .clipToBounds() // ✅ 경계 밖 드로잉 차단
+                        .clipToBounds()
                         .pointerInput(Unit) {
                             detectDragGestures(
                                 onDragStart = { offset ->
                                     path.moveTo(offset.x, offset.y)
                                 },
                                 onDrag = { change, _ ->
-                                    // Path 객체를 새로 만들어 Compose가 감지하도록 함
                                     val newPath = Path().apply {
                                         addPath(path)
                                         lineTo(change.position.x, change.position.y)
@@ -82,18 +87,28 @@ fun DrawScreen() {
                             )
                         }
                 ) {
-                    drawPath(
-                        path = path,
-                        color = Color.White,
-                        style = Stroke(width = 100f)
-                    )
+                    // Path를 그리기
+                    drawPath(path = path, color = Color.White, style = Stroke(width = 60f))
+
+                    // Canvas 내용을 Bitmap으로 변환 (최신 상태 저장)
+                    val bitmap = createBitmap(size.width.toInt(), size.height.toInt())
+                    val canvas = android.graphics.Canvas(bitmap)
+                    canvas.drawColor(android.graphics.Color.BLACK)
+                    val paint = android.graphics.Paint().apply {
+                        color = android.graphics.Color.WHITE
+                        style = android.graphics.Paint.Style.STROKE
+                        strokeWidth = 60f
+                        isAntiAlias = true
+                    }
+                    canvas.drawPath(path.asAndroidPath(), paint)
+                    latestBitmap = bitmap
                 }
             }
         }
 
         Spacer(modifier = Modifier.height(24.dp))
 
-        // ⚙️ 하단 버튼 영역
+        // ⚙️ 하단 버튼
         Column(
             modifier = Modifier
                 .fillMaxWidth()
@@ -103,13 +118,18 @@ fun DrawScreen() {
         ) {
             Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
                 Button(onClick = {
-                    resultText = "5, 93%" // TODO: 나중에 TFLite 모델 연결
+                    latestBitmap?.let {
+                        val (digit, confidence) = viewModel.classify(it)
+                        resultText = "예측: $digit (정확도 ${(confidence * 100).toInt()}%)"
+                    } ?: run {
+                        resultText = "그림이 없습니다."
+                    }
                 }) {
                     Text("CLASSIFY")
                 }
 
                 Button(onClick = {
-                    path = Path() // 초기화
+                    path = Path()
                     resultText = "결과 없음"
                 }) {
                     Text("CLEAR")
