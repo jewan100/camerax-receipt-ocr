@@ -8,6 +8,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.jewan.myapp.ui.main.MainScreen
 import com.jewan.myapp.ui.camera.CameraPreviewScreen
+import com.jewan.myapp.ui.draw.DrawScreen
 import com.jewan.myapp.ui.preview.ImagePreviewScreen
 import com.jewan.myapp.viewmodel.ImageViewModel
 
@@ -18,9 +19,9 @@ fun AppNavGraph(navController: NavHostController) {
 
     NavHost(
         navController = navController,
-        startDestination = "main" // ✅ 변경됨
+        startDestination = "main" // 변경됨
     ) {
-        // ✅ 메인 선택 화면
+        // 메인 선택 화면
         composable("main") {
             MainScreen(navController)
         }
@@ -32,7 +33,7 @@ fun AppNavGraph(navController: NavHostController) {
 
         // 드로잉 화면
         composable("draw") {
-            // DrawCanvasScreen()
+            DrawScreen()
         }
 
         // 촬영한 사진 미리보기 화면
