@@ -1,4 +1,4 @@
-package com.jewan.myapp.ui
+package com.jewan.myapp.ai
 
 import android.content.Context
 import android.graphics.Bitmap

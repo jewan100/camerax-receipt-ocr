@@ -1,4 +1,4 @@
-package com.jewan.myapp.ui
+package com.jewan.myapp.ai
 
 import android.content.Context
 import android.graphics.Bitmap
@@ -47,7 +47,7 @@ class ImageClassifier(private val context: Context) {
 
     // 🏷️ 라벨 파일 로드 (assets/label/label.txt)
     private val labels: List<String> by lazy {
-        FileUtil.loadLabels(context, "label/label.txt")
+        FileUtil.loadLabels(context, "label/labels.txt")
     }
 
     /**
