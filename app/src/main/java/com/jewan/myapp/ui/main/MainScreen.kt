@@ -40,7 +40,7 @@ fun MainScreen(navController: NavController) {
                     .fillMaxWidth()
                     .padding(vertical = 8.dp)
             ) {
-                Text("📸 카메라로 이동")
+                Text("카메라")
             }
 
             Button(
@@ -49,7 +49,16 @@ fun MainScreen(navController: NavController) {
                     .fillMaxWidth()
                     .padding(vertical = 8.dp)
             ) {
-                Text("✏️ 드로잉으로 이동")
+                Text("드로잉")
+            }
+
+            Button(
+                onClick = { navController.navigate("gallery") },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 8.dp)
+            ) {
+                Text("갤러리")
             }
         }
     }

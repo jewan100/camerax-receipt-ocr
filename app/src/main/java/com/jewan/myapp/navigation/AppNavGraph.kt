@@ -9,6 +9,7 @@ import androidx.navigation.compose.composable
 import com.jewan.myapp.ui.main.MainScreen
 import com.jewan.myapp.ui.camera.CameraPreviewScreen
 import com.jewan.myapp.ui.draw.DrawScreen
+import com.jewan.myapp.ui.gallery.GalleryScreen
 import com.jewan.myapp.ui.preview.ImagePreviewScreen
 import com.jewan.myapp.viewmodel.ImageViewModel
 
@@ -39,6 +40,11 @@ fun AppNavGraph(navController: NavHostController) {
         // 촬영한 사진 미리보기 화면
         composable("preview") {
             ImagePreviewScreen(navController, viewModel)
+        }
+
+        // 갤러리 선택 화면
+        composable("gallery") {
+            GalleryScreen(navController, viewModel)
         }
     }
 }

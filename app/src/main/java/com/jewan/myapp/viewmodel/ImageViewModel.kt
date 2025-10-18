@@ -1,6 +1,7 @@
 package com.jewan.myapp.viewmodel
 
 import android.graphics.Bitmap
+import android.net.Uri
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 
@@ -14,5 +15,15 @@ class ImageViewModel : ViewModel() {
 
     fun clearBitmap() {
         capturedBitmap.value = null
+    }
+
+    val imageUri = mutableStateOf<Uri?>(null)
+
+    fun setImageUri(uri: Uri?) {
+        imageUri.value = uri
+    }
+
+    fun clear() {
+        imageUri.value = null
     }
 }
