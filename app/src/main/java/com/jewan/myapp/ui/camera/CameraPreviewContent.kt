@@ -24,12 +24,11 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.jewan.myapp.viewmodel.ImageViewModel
 
 @Composable
-fun CameraPreviewScreen(
+fun CameraPreviewContent(
     navController: NavController,
     viewModel: ImageViewModel
 ) {
