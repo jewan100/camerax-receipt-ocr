@@ -16,7 +16,7 @@ import androidx.core.graphics.get
 class DrawViewModel(application: Application) : AndroidViewModel(application) {
 
     private val tflite: Interpreter by lazy {
-        val model = FileUtil.loadMappedFile(application, "ml/keras_model.tflite")
+        val model = FileUtil.loadMappedFile(application, "ml/keras_model_cnn.tflite")
         Interpreter(model, Interpreter.Options().apply { setNumThreads(2) })
     }
 
