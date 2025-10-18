@@ -6,24 +6,19 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 
 class ImageViewModel : ViewModel() {
-
     val capturedBitmap = mutableStateOf<Bitmap?>(null)
+    val imageUri = mutableStateOf<Uri?>(null)
 
-    fun setBitmap(bitmap: Bitmap) {
+    fun setBitmap(bitmap: Bitmap?) {
         capturedBitmap.value = bitmap
     }
-
-    fun clearBitmap() {
-        capturedBitmap.value = null
-    }
-
-    val imageUri = mutableStateOf<Uri?>(null)
 
     fun setImageUri(uri: Uri?) {
         imageUri.value = uri
     }
 
     fun clear() {
+        capturedBitmap.value = null
         imageUri.value = null
     }
 }
